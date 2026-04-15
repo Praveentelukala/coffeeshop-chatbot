@@ -1,13 +1,12 @@
 const navbarLinks = document.querySelectorAll(".nav-menu .nav-link");
-const menuOpenButton =document.querySelector("#menu-open-button");
-const menuCloseButton =document.querySelector("#menu-close-button");
+const menuOpenButton = document.querySelector("#menu-open-button");
+const menuCloseButton = document.querySelector("#menu-close-button");
 
 menuOpenButton.addEventListener("click", () => {
-    document.body.classList.toggle("show-mobile-menu");
+  document.body.classList.toggle("show-mobile-menu");
 });
 
-menuCloseButton.addEventListener("click", () => menuOpenButton.click
-());
+menuCloseButton.addEventListener("click", () => menuOpenButton.click());
 navbarLinks.forEach((link) => {
   link.addEventListener("click", () => menuOpenButton.click());
 });
@@ -55,9 +54,9 @@ async function sendMessage() {
   const res = await fetch("http://localhost:5000/chat", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ message })
+    body: JSON.stringify({ message }),
   });
 
   const data = await res.json();
@@ -72,27 +71,6 @@ async function sendMessage() {
 
   input.value = "";
 }
-
-// async function sendMessage() {
-//   const input = document.getElementById("userInput");
-//   const message = input.value;
-
-//   chatbox.innerHTML += `<div class="user">${message}</div>`;
-
-//   const res = await fetch("http://localhost:5000/chat", {
-//     method: "POST",
-//     headers: {"Content-Type": "application/json"},
-//     body: JSON.stringify({ message })
-//   });
-
-//   const data = await res.json();
-
-//   chatbox.innerHTML += `<div class="bot">${data.reply}</div>`;
-
-//   chatbox.scrollTop = chatbox.scrollHeight;
-
-//   input.value = "";
-// }
 
 const chatbot = document.getElementById("chatbot");
 const toggleBtn = document.getElementById("chat-toggle");
@@ -158,8 +136,8 @@ async function sendMessage() {
 
   const res = await fetch("http://localhost:5000/chat", {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ message })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message }),
   });
 
   const data = await res.json();

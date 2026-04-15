@@ -265,6 +265,10 @@ def chat():
     return jsonify({"reply": reply})
 
 
+@app.route("/")
+def home():
+    return "☕ Coffee Chatbot Backend is running!"
+
 #  Run
 if __name__ == "__main__":
     print("🚀 Server running...")

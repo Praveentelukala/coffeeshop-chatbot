@@ -216,6 +216,20 @@ Type 'dine-in' or 'delivery'
     if "payment" in msg:
         return "💳 We accept UPI, cards, and cash."
 
+    if "available" in msg or "have" in msg:
+        found = False
+
+    for item in menu:
+        if item in msg:
+            found = True
+            return f"✅ Yes, {item.title()} is available!"
+
+    if not found:
+        return "❌ Sorry, that item is not available. Please check our menu." 
+    if not any(word in msg for word in menu) and \
+        not any(word in msg for word in ["menu", "order", "price", "available", "suggest"]):
+        return "🤖 I can help with coffee shop queries like menu, orders, and recommendations  "  
+
     # =========================
     #  GEMINI AI
     # =========================

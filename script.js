@@ -123,7 +123,7 @@ async function sendMessage() {
       body: JSON.stringify({ message }),
     });
 
-    // 🔥 Check response
+    // Check response
     if (!res.ok) {
       throw new Error("Server error");
     }
@@ -132,6 +132,7 @@ async function sendMessage() {
 
     removeTyping();
     addBotMessage(data.reply);
+
   } catch (error) {
     console.error("Error:", error);
 

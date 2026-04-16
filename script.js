@@ -38,46 +38,14 @@ let swiper = new Swiper(".slider-wrapper", {
     },
   },
 });
-
-async function sendMessage() {
-  const input = document.getElementById("userInput");
-  const message = input.value;
-
-  const chatbox = document.getElementById("chatbox");
-
-  // User message
-  chatbox.innerHTML += `<div class="user">You: ${message}</div>`;
-
-  // Typing effect
-  chatbox.innerHTML += `<div class="bot" id="typing">Bot is typing...</div>`;
-
-  const res = await fetch("http://localhost:5000/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ message }),
-  });
-
-  const data = await res.json();
-
-  // Remove typing
-  document.getElementById("typing").remove();
-
-  // Bot message
-  chatbox.innerHTML += `<div class="bot">Bot: ${data.reply}</div>`;
-
-  chatbox.scrollTop = chatbox.scrollHeight;
-
-  input.value = "";
-}
-
 const chatbot = document.getElementById("chatbot");
 const toggleBtn = document.getElementById("chat-toggle");
 const closeBtn = document.getElementById("close-btn");
 const chatbox = document.getElementById("chatbox");
 
-// Open chatbot
+// =========================
+// OPEN CHAT
+// =========================
 toggleBtn.onclick = () => {
   chatbot.classList.add("active");
 
@@ -86,12 +54,16 @@ toggleBtn.onclick = () => {
   }
 };
 
-// Close chatbot
+// =========================
+// CLOSE CHAT
+// =========================
 closeBtn.onclick = () => {
   chatbot.classList.remove("active");
 };
 
-// Add user message
+// =========================
+// ADD USER MESSAGE
+// =========================
 function addUserMessage(text) {
   const div = document.createElement("div");
   div.className = "message user";
@@ -99,7 +71,9 @@ function addUserMessage(text) {
   chatbox.appendChild(div);
 }
 
-// Add bot message
+// =========================
+// ADD BOT MESSAGE
+// =========================
 function addBotMessage(text) {
   const div = document.createElement("div");
   div.className = "message bot";
@@ -107,7 +81,9 @@ function addBotMessage(text) {
   chatbox.appendChild(div);
 }
 
-// Typing animation
+// =========================
+// SHOW TYPING
+// =========================
 function showTyping() {
   const div = document.createElement("div");
   div.className = "message bot";
@@ -116,13 +92,17 @@ function showTyping() {
   chatbox.appendChild(div);
 }
 
-// Remove typing
+// =========================
+// REMOVE TYPING
+// =========================
 function removeTyping() {
   const typing = document.getElementById("typing");
   if (typing) typing.remove();
 }
 
-// Send message
+// =========================
+// SEND MESSAGE
+// =========================
 async function sendMessage() {
   const input = document.getElementById("userInput");
   const message = input.value;
@@ -134,28 +114,42 @@ async function sendMessage() {
 
   chatbox.scrollTop = chatbox.scrollHeight;
 
-  const res = await fetch("https://coffeeshop-chatbot.onrender.com/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message }),
-  });
+  try {
+    const res = await fetch("https://coffeeshop-chatbot.onrender.com/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message }),
+    });
 
-  const data = await res.json();
+    // 🔥 Check response
+    if (!res.ok) {
+      throw new Error("Server error");
+    }
 
-  removeTyping();
-  addBotMessage(data.reply);
+    const data = await res.json();
+
+    removeTyping();
+    addBotMessage(data.reply);
+  } catch (error) {
+    console.error("Error:", error);
+
+    removeTyping();
+    addBotMessage("⚠️ Server error. Please try again.");
+  }
 
   chatbox.scrollTop = chatbox.scrollHeight;
-
   input.value = "";
 }
 
+// =========================
+// QUICK BUTTONS
+// =========================
 function quickAsk(text) {
   const input = document.getElementById("userInput");
 
   input.value = text;
-
-  // simulate Enter key feel
   sendMessage();
 
   input.focus();

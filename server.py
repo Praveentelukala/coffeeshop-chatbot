@@ -1,42 +1,36 @@
 
 # import os
-# import time
 # from flask import Flask, request, jsonify
 # from flask_cors import CORS
 # from dotenv import load_dotenv
 # from google import genai
 # from google.genai.errors import ClientError, ServerError
 
-# #  Load API key
+# # 🔐 Load API key
 # load_dotenv()
 # api_key = os.getenv("GEMINI_API_KEY")
 
-# #  Gemini client
+# # 🤖 Gemini client
 # client = genai.Client(api_key=api_key)
 
-# # Flask app
+# # 🌐 Flask app
 # app = Flask(__name__)
 # CORS(app)
 
-# #  Load website data
+# # 📄 Load website data
 # with open("data.txt", "r", encoding="utf-8") as f:
 #     website_data = f.read()
 
-# #  Chat history
-# chat_history = []
-
-# # Order storage
+# # 💬 Memory
 # order = []
 
-# #  Token counter
+# # 🎟️ Order & delivery
 # token_number = 100
-
-# #  Delivery state
 # order_mode = None
 # delivery_mode = False
 # delivery_data = {}
 
-# #  Menu with prices
+# # ☕ Menu
 # menu = {
 #     "espresso": 120,
 #     "cappuccino": 150,
@@ -51,14 +45,27 @@
 #     "fries": 80
 # }
 
-# #  Chatbot function
+# # =========================
+# # 🧠 CHATBOT FUNCTION
+# # =========================
 # def chatbot_reply(message):
 #     global token_number, order_mode, delivery_mode, delivery_data
 
 #     msg = message.lower()
 
 #     # =========================
-#     #  ADD ITEM
+#     # 🚫 BLOCK UNRELATED QUESTIONS (FIRST)
+#     # =========================
+#     coffee_keywords = list(menu.keys()) + [
+#         "menu", "order", "price", "available",
+#         "suggest", "recommend", "coffee", "drink"
+#     ]
+
+#     if not any(word in msg for word in coffee_keywords):
+#         return "🤖 I can help with coffee menu, drinks, and orders ☕"
+
+#     # =========================
+#     # 🛒 ADD ITEM
 #     # =========================
 #     for item in menu:
 #         if item in msg:
@@ -66,7 +73,7 @@
 #             return f"✅ {item.title()} added (₹{menu[item]})"
 
 #     # =========================
-#     #  SHOW ORDER
+#     # 📦 SHOW ORDER
 #     # =========================
 #     if "my order" in msg or "show order" in msg:
 #         if not order:
@@ -83,24 +90,23 @@
 # """
 
 #     # =========================
-#     #  REMOVE ITEM
+#     # ❌ REMOVE ITEM
 #     # =========================
 #     if "remove" in msg:
 #         for item in menu:
 #             if item in msg and item in order:
 #                 order.remove(item)
-#                 return f"❌ {item.title()} removed from your order!"
+#                 return f"❌ {item.title()} removed!"
 
 #     # =========================
-#     #  PLACE ORDER → CHOOSE TYPE
+#     # 🧾 PLACE ORDER
 #     # =========================
 #     if "place order" in msg or "checkout" in msg:
 #         if not order:
 #             return "🛒 Your cart is empty."
 
 #         order_mode = "choose"
-
-#         return """🪑 Please choose order type:
+#         return """🪑 Choose order type:
 
 # 1️⃣ Dine-in  
 # 2️⃣ Delivery  
@@ -109,14 +115,12 @@
 # """
 
 #     # =========================
-#     #  DINE-IN OR  DELIVERY
+#     # 🪑 DINE-IN / DELIVERY
 #     # =========================
 #     if order_mode == "choose":
 
-#         #  Dine-in
 #         if "dine" in msg:
 #             order_mode = None
-
 #             token_number += 1
 
 #             total = sum(menu[i] for i in order)
@@ -124,40 +128,34 @@
 
 #             order.clear()
 
-#             return f"""🪑 Dine-in Order Confirmed!
+#             return f"""🪑 Dine-in Confirmed!
 
-# 🎟️ Token Number: {token_number}
+# 🎟️ Token: {token_number}
 
 # 🛒 Items:
 # {items}
 
 # 💰 Total: ₹{total}
-
-# 👉 Please tell your token number at the counter.
-# ⏳ Ready in 5–10 minutes.
-# ☕ Enjoy your coffee!
 # """
 
-#         #  Delivery
 #         elif "delivery" in msg:
 #             order_mode = None
 #             delivery_mode = True
 #             delivery_data.clear()
-
-#             return "📦 Enter your name for delivery:"
+#             return "📦 Enter your name:"
 
 #     # =========================
-#     #  DELIVERY FLOW
+#     # 🚚 DELIVERY FLOW
 #     # =========================
 #     if delivery_mode:
 
 #         if "name" not in delivery_data:
 #             delivery_data["name"] = message
-#             return "📞 Enter your phone number:"
+#             return "📞 Enter phone number:"
 
 #         elif "phone" not in delivery_data:
 #             delivery_data["phone"] = message
-#             return "🏠 Enter your delivery address:"
+#             return "🏠 Enter address:"
 
 #         elif "address" not in delivery_data:
 #             delivery_data["address"] = message
@@ -168,100 +166,74 @@
 #             delivery_mode = False
 #             order.clear()
 
-#             return f"""🚚 Delivery Order Confirmed!
+#             return f"""🚚 Order Confirmed!
 
-# 👤 Name: {delivery_data['name']}
-# 📞 Phone: {delivery_data['phone']}
-# 🏠 Address: {delivery_data['address']}
+# 👤 {delivery_data['name']}
+# 📞 {delivery_data['phone']}
+# 🏠 {delivery_data['address']}
 
 # 🛒 Items:
 # {items}
 
-# 💰 Total: ₹{total}
-
-# 🚚 Your order will be delivered soon!
-# ☕ Thank you!
+# 💰 ₹{total}
 # """
 
 #     # =========================
-#     #  QUICK RESPONSES
+#     # ⚡ QUICK RESPONSES
 #     # =========================
 #     if "menu" in msg:
-#         return """☕ Our Menu:
+#         return """☕ Menu:
 
 # • Espresso - ₹120  
 # • Cappuccino - ₹150  
 # • Latte - ₹140  
 # • Americano - ₹130  
 
-# ❄️ Cold Drinks:
+# ❄️ Cold:
 # • Cold Coffee - ₹160  
 # • Iced Latte - ₹170  
-# • Milkshakes - ₹180  
-
-# 🍰 Desserts:
-# • Cake - ₹100  
-# • Brownie - ₹90  
+# • Milkshake - ₹180  
 # """
 
-#     if "suggest" in msg or "recommend" in msg:
-#         return "☕ Try Cappuccino or Cold Coffee — both are popular!"
+#     if any(word in msg for word in ["suggest", "recommend", "best"]):
+#         return "☕ Try Cappuccino or Cold Coffee — popular choices!"
 
-#     if "offer" in msg:
-#         return "🎉 We have combo offers and discounts!"
+#     if any(word in msg for word in ["cold", "sweet"]):
+#         return """❄️ Try:
 
-#     if "wifi" in msg:
-#         return "📶 Free WiFi available!"
-    
-#     if "payment" in msg:
-#         return "💳 We accept UPI, cards, and cash."
-    
+# • Cold Coffee  
+# • Milkshake  
+# • Iced Latte  
+# """
+
 #     if "coffee" in msg:
-#         return """☕ Yes, we have coffee!
+#         return """☕ We have:
 
-# Here are some options:
 # • Espresso  
 # • Cappuccino  
 # • Latte  
 # • Americano  
+# """
 
-# Type the name to order 😊"""
-
+#     # =========================
+#     # ✅ AVAILABILITY CHECK (FIXED)
+#     # =========================
 #     if "available" in msg or "have" in msg:
-#         found = False
-        
 #         for item in menu:
 #             if item in msg:
-#                 found = True
 #                 return f"✅ Yes, {item.title()} is available!"
 
-#     if not found:
-#         return "❌ Sorry, that item is not available. Please check our menu." 
-#     if not any(word in msg for word in menu) and \
-#         not any(word in msg for word in ["menu", "order", "price", "available", "suggest"]):
-#         return "🤖 I can help with coffee shop queries like menu, orders, and recommendations  "  
+#         return "❌ Sorry, that item is not available."
 
 #     # =========================
-#     #  GEMINI AI
+#     # 🤖 GEMINI AI (SAFE)
 #     # =========================
-#     chat_history.append(f"User: {message}")
+#     prompt = f"""
+# You are a coffee shop assistant.
 
-#     if len(chat_history) > 6:
-#         chat_history.pop(0)
-        
-#         prompt = f"""
-# You are a smart and friendly coffee shop assistant.
-
-# Your job:
-# - Help users with menu, drinks, and recommendations
-# - Understand natural language (like "something cold and sweet")
-# - Suggest items from the menu
-
-# Rules:
-# - Only talk about the coffee shop
-# - If item is NOT available → say "not available"
-# - If question is unrelated → politely say:
-#   "I can help with coffee, menu, and orders ☕"
+# - Answer only about coffee shop
+# - Suggest drinks
+# - If unrelated → say politely
 
 # Menu:
 # {website_data}
@@ -269,53 +241,48 @@
 # User: {message}
 # """
 
-#     try:
+# try:
+#     if not any(word in msg for word in coffee_keywords):
 #         response = client.models.generate_content(
 #             model="gemini-2.5-flash-lite",
-#             contents=prompt
+#             contents=f"Answer briefly: {message}"
 #         )
-#         reply = response.text
+#         return response.text if response.text else "🤖 I can help with coffee ☕"
+    
+#     response = client.models.generate_content(
+#         model="gemini-2.5-flash-lite",
+#         contents=prompt
+#     )
+#     return response.text if response.text else "🤖 Ask about menu ☕"
 
-#     except ClientError as e:
-#         if "quota" in str(e).lower():
-#             reply = "⚠️ API limit exceeded."
-#         else:
-#             reply = "⚠️ Request error."
+# except Exception as e:
+#     print("Gemini Error:", e)
+#     return "⚠️ Server busy. Please try again."
 
-#     except ServerError:
-#         reply = "⚠️ Server busy."
-
-#     except Exception:
-#         reply = "⚠️ Something went wrong."
-
-#     chat_history.append(f"Bot: {reply}")
-
-#     return reply
-
-
-# #  API
+# # =========================
+# # 🌐 API ROUTES
+# # =========================
 # @app.route("/chat", methods=["POST"])
 # def chat():
 #     user_msg = request.json["message"]
 #     reply = chatbot_reply(user_msg)
 #     return jsonify({"reply": reply})
 
-
 # @app.route("/")
 # def home():
-#     return "☕ Coffee Chatbot Backend is running!"
+#     return "☕ Coffee Chatbot Running"
 
-# #  Run
+# # =========================
+# # ▶️ RUN
+# # =========================
 # if __name__ == "__main__":
-#     print("🚀 Server running...")
-#     app.run(debug=True, port=5000)
+#     app.run(debug=True)
 
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 from google import genai
-from google.genai.errors import ClientError, ServerError
 
 # 🔐 Load API key
 load_dotenv()
@@ -328,11 +295,14 @@ client = genai.Client(api_key=api_key)
 app = Flask(__name__)
 CORS(app)
 
-# 📄 Load website data
-with open("data.txt", "r", encoding="utf-8") as f:
-    website_data = f.read()
+# 📄 Load data safely
+try:
+    with open("data.txt", "r", encoding="utf-8") as f:
+        website_data = f.read()
+except:
+    website_data = "Coffee shop menu: espresso, cappuccino, latte"
 
-# 💬 Memory
+# 💬 Order memory
 order = []
 
 # 🎟️ Order & delivery
@@ -364,16 +334,11 @@ def chatbot_reply(message):
 
     msg = message.lower()
 
-    # =========================
-    # 🚫 BLOCK UNRELATED QUESTIONS (FIRST)
-    # =========================
     coffee_keywords = list(menu.keys()) + [
         "menu", "order", "price", "available",
-        "suggest", "recommend", "coffee", "drink"
+        "suggest", "recommend", "coffee", "drink",
+        "cold", "sweet"
     ]
-
-    if not any(word in msg for word in coffee_keywords):
-        return "🤖 I can help with coffee menu, drinks, and orders ☕"
 
     # =========================
     # 🛒 ADD ITEM
@@ -527,7 +492,7 @@ Type 'dine-in' or 'delivery'
 """
 
     # =========================
-    # ✅ AVAILABILITY CHECK (FIXED)
+    # ✅ AVAILABILITY CHECK
     # =========================
     if "available" in msg or "have" in msg:
         for item in menu:
@@ -537,51 +502,67 @@ Type 'dine-in' or 'delivery'
         return "❌ Sorry, that item is not available."
 
     # =========================
-    # 🤖 GEMINI AI (SAFE)
+    # 🤖 AI HANDLING
     # =========================
-    prompt = f"""
+    try:
+        # 👉 Unrelated → AI answers
+        if not any(word in msg for word in coffee_keywords):
+            response = client.models.generate_content(
+                model="gemini-2.5-flash-lite",
+                contents=f"Answer briefly: {message}"
+            )
+            return response.text if response.text else "🤖 Sorry, I couldn't answer."
+
+        # 👉 Related but not matched → AI with context
+        prompt = f"""
 You are a coffee shop assistant.
 
-- Answer only about coffee shop
-- Suggest drinks
-- If unrelated → say politely
+Answer only about coffee shop.
 
 Menu:
 {website_data}
 
 User: {message}
 """
-
-    try:
         response = client.models.generate_content(
             model="gemini-2.5-flash-lite",
             contents=prompt
         )
 
-        if not response or not response.text:
-            return "🤖 Please ask about menu or drinks ☕"
-
-        return response.text
+        return response.text if response.text else "🤖 Ask about menu ☕"
 
     except Exception as e:
         print("Gemini Error:", e)
         return "⚠️ Server busy. Please try again."
+
 
 # =========================
 # 🌐 API ROUTES
 # =========================
 @app.route("/chat", methods=["POST"])
 def chat():
-    user_msg = request.json["message"]
-    reply = chatbot_reply(user_msg)
-    return jsonify({"reply": reply})
+    try:
+        data = request.get_json()
+
+        if not data or "message" not in data:
+            return jsonify({"reply": "Invalid request"}), 400
+
+        reply = chatbot_reply(data["message"])
+        return jsonify({"reply": reply})
+
+    except Exception as e:
+        print("Server Error:", e)
+        return jsonify({"reply": "⚠️ Server error"}), 500
+
 
 @app.route("/")
 def home():
     return "☕ Coffee Chatbot Running"
 
+
 # =========================
-# ▶️ RUN
+# ▶️ RUN (Render compatible)
 # =========================
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)

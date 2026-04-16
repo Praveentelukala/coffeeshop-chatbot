@@ -505,15 +505,16 @@ Type 'dine-in' or 'delivery'
     # 🤖 AI HANDLING
     # =========================
     try:
-        # 👉 Unrelated → AI answers
         if not any(word in msg for word in coffee_keywords):
-            response = client.models.generate_content(
-                model="gemini-2.5-flash-lite",
-                contents=f"Answer briefly: {message}"
-            )
-            return response.text if response.text else "🤖 Sorry, I couldn't answer."
+            return """🤖 Sorry, I’m here to help with our coffee shop ☕  
 
-        # 👉 Related but not matched → AI with context
+You can ask me about:
+• Menu  
+• Drinks  
+• Orders  
+
+Try asking "menu" 😊"""
+            
         prompt = f"""
 You are a coffee shop assistant.
 

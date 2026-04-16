@@ -218,11 +218,11 @@ Type 'dine-in' or 'delivery'
 
     if "available" in msg or "have" in msg:
         found = False
-
-    for item in menu:
-        if item in msg:
-            found = True
-            return f"✅ Yes, {item.title()} is available!"
+        
+        for item in menu:
+            if item in msg:
+                found = True
+                return f"✅ Yes, {item.title()} is available!"
 
     if not found:
         return "❌ Sorry, that item is not available. Please check our menu." 

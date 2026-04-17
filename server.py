@@ -142,6 +142,10 @@ Type 'dine-in' or 'delivery'
 {items}
 
 💰 Total: ₹{total}
+
+⏱️ Please wait 5–10 minutes while we prepare your order.
+
+😊 You can relax — we’ll call your token number soon!
 """
 
         elif "delivery" in msg:
@@ -184,6 +188,10 @@ Type 'dine-in' or 'delivery'
 {items}
 
 💰 ₹{total}
+
+⏱️ Estimated Delivery Time: 20–30 minutes
+
+😊 Your order is on the way! Sit back and relax
 """    
     # =========================
     #  AI FALLBACK (IMPORTANT)

@@ -23,6 +23,12 @@ except:
 #  Order memory
 order = []
 
+# order and delivery memory
+token_number = 100
+order_mode = None
+delivery_mode = False
+delivery_data = {}
+
 #  Menu
 menu = {
     "espresso": 120,
@@ -42,6 +48,8 @@ menu = {
 #  CHATBOT FUNCTION
 # =========================
 def chatbot_reply(message):
+    global token_number, order_mode, delivery_mode, delivery_data
+    
     msg = message.lower()
 
     # =========================
@@ -96,7 +104,87 @@ def chatbot_reply(message):
             if item in msg:
                 return f"✅ Yes, {item.title()} is available!"
         return "❌ Sorry, that item is not available."
+        # =========================
+    # 🧾 PLACE ORDER
+    # =========================
+    if "place order" in msg or "checkout" in msg:
+        if not order:
+            return "🛒 Your cart is empty."
 
+        order_mode = "choose"
+        return """🪑 Choose order type:
+
+1️⃣ Dine-in  
+2️⃣ Delivery  
+
+Type 'dine-in' or 'delivery'
+"""
+
+    # =========================
+    # 🪑 DINE-IN / DELIVERY
+    # =========================
+    if order_mode == "choose":
+
+        if "dine" in msg:
+            order_mode = None
+            token_number += 1
+
+            total = sum(menu[i] for i in order)
+            items = "\n".join([f"• {i.title()} - ₹{menu[i]}" for i in order])
+
+            order.clear()
+
+            return f"""🪑 Dine-in Confirmed!
+
+🎟️ Token: {token_number}
+
+🛒 Items:
+{items}
+
+💰 Total: ₹{total}
+"""
+
+        elif "delivery" in msg:
+            order_mode = None
+            delivery_mode = True
+            delivery_data.clear()
+            return "📦 Enter your name:"
+        
+
+
+        # =========================
+    # 🚚 DELIVERY FLOW
+    # =========================
+    if delivery_mode:
+
+        if "name" not in delivery_data:
+            delivery_data["name"] = message
+            return "📞 Enter phone number:"
+
+        elif "phone" not in delivery_data:
+            delivery_data["phone"] = message
+            return "🏠 Enter address:"
+
+        elif "address" not in delivery_data:
+            delivery_data["address"] = message
+
+            total = sum(menu[i] for i in order)
+            items = "\n".join([f"• {i.title()} - ₹{menu[i]}" for i in order])
+
+            delivery_mode = False
+            order.clear()
+
+            return f"""🚚 Order Confirmed!
+
+👤 {delivery_data['name']}
+📞 {delivery_data['phone']}
+🏠 {delivery_data['address']}
+
+🛒 Items:
+{items}
+
+💰 ₹{total}
+"""    
     # =========================
     #  AI FALLBACK (IMPORTANT)
     # =========================
